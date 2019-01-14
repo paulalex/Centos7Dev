@@ -1,0 +1,38 @@
+{
+  "variables": {
+    "iso": "C:\\Users\\paoc\\Downloads\\CentOS-7-x86_64-Everything-1708.iso",
+    "checksum": "d23eab94eaa22e3bd34ac13caf923801"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "iso_url": "{{ user `iso` }}",
+      "iso_checksum": "{{ user `checksum` }}",
+      "iso_checksum_type": "md5",
+      "vm_name": "Software_Development",
+      "guest_os_type": "RedHat_64",
+      "ssh_username": "root",
+      "ssh_password": "changeme",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "2400s",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "16000"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"]
+      ],
+      "disk_size": "10240",
+      "http_directory": "http",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "shutdown_command": "/sbin/halt -p",
+      "post_shutdown_delay": "240s"
+    }
+  ],"provisioners": [
+      {"scripts": [
+		"virtual-box.sh",
+        "puppet-cert-request.sh"
+      ],
+      "type": "shell"
+    }]
+}
